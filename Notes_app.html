@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Day 5 – Notes App</title>
+  <style>
+    /* General Styles */
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #f2f6fc;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+
+    .note-input {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #f9f9f9;
+      color: #333;
+      font-size: 14px;
+      outline: none;
+    }
+
+    textarea {
+      resize: none;
+      height: 80px;
+    }
+
+    button {
+      background: linear-gradient(135deg, #007bff, #00c6ff);
+      border: none;
+      padding: 10px 15px;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .search-bar {
+      margin-bottom: 20px;
+    }
+
+    .notes-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .note {
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 12px;
+      position: relative;
+      border: 1px solid #ddd;
+    }
+
+    .note h3 {
+      margin: 0;
+      font-size: 16px;
+      color: #007bff;
+    }
+
+    .note p {
+      font-size: 14px;
+      margin-top: 5px;
+      color: #555;
+    }
+
+    .delete-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ff6b6b;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      color: white;
+      font-size: 12px;
+      transition: 0.3s;
+    }
+
+    .delete-btn:hover {
+      background: #e84118;
+    }
+
+    /* Mobile Friendly */
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+      input, textarea, button {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Day 5 – Notes App 📝</h2>
+
+    <!-- Search Bar -->
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search notes by title..." onkeyup="searchNotes()">
+    </div>
+
+    <!-- Note Input Section -->
+    <div class="note-input">
+      <input type="text" id="noteTitle" placeholder="Note Title">
+      <textarea id="noteContent" placeholder="Write your note here..."></textarea>
+      <button onclick="addNote()">Add Note</button>
+    </div>
+
+    <!-- Notes List -->
+    <div class="notes-list" id="notesList"></div>
+  </div>
+
+  <script>
+    // Load notes on startup
+    document.addEventListener("DOMContentLoaded", loadNotes);
+
+    function addNote() {
+      let title = document.getElementById("noteTitle").value.trim();
+      let content = document.getElementById("noteContent").value.trim();
+
+      if (title === "" || content === "") {
+        alert("Please enter both title and content!");
+        return;
+      }
+
+      let note = { title, content };
+      let notes = JSON.parse(localStorage.getItem("notes")) || [];
+      notes.push(note);
+      localStorage.setItem("notes", JSON.stringify(notes));
+
+      document.getElementById("noteTitle").value = "";
+      document.getElementById("noteContent").value = "";
+
+      loadNotes();
+    }
+
+    function loadNotes() {
+      let notesList = document.getElementById("notesList");
+      notesList.innerHTML = "";
+
+      let notes = JSON.parse(localStorage.getItem("notes")) || [];
+
+      notes.forEach((note, index) => {
+        let noteDiv = document.createElement("div");
+        noteDiv.classList.add("note");
+
+        noteDiv.innerHTML = `
+          <h3>${note.title}</h3>
+          <p>${note.content}</p>
+          <button class="delete-btn" onclick="deleteNote(${index})">Delete</button>
+        `;
+
+        notesList.appendChild(noteDiv);
+      });
+    }
+
+    function deleteNote(index) {
+      let notes = JSON.parse(localStorage.getItem("notes")) || [];
+      notes.splice(index, 1);
+      localStorage.setItem("notes", JSON.stringify(notes));
+      loadNotes();
+    }
+
+    function searchNotes() {
+      let input = document.getElementById("searchInput").value.toLowerCase();
+      let notes = document.querySelectorAll(".note");
+
+      notes.forEach(note => {
+        let title = note.querySelector("h3").innerText.toLowerCase();
+        note.style.display = title.includes(input) ? "block" : "none";
+      });
+    }
+  </script>
+</body>
+</html>
