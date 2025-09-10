@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Day 7 – Expense Tracker 💰</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0fff4; /* light green shade */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #2f855a;
+      margin-bottom: 20px;
+    }
+
+    .balance {
+      text-align: center;
+      margin: 15px 0;
+      font-size: 1.2rem;
+    }
+
+    .income-expense {
+      display: flex;
+      justify-content: space-between;
+      margin: 20px 0;
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: 8px;
+    }
+
+    .income, .expense {
+      text-align: center;
+      width: 48%;
+    }
+
+    .income h4 {
+      color: #38a169;
+    }
+
+    .expense h4 {
+      color: #e53e3e;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #38a169;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #2f855a;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 20px 0 0;
+    }
+
+    li {
+      background: #f9f9f9;
+      padding: 12px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .money-plus {
+      color: #38a169;
+    }
+
+    .money-minus {
+      color: #e53e3e;
+    }
+
+    .delete-btn {
+      background: transparent;
+      border: none;
+      color: #e53e3e;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Day 7 – Expense Tracker 💰</h2>
+    <div class="balance">
+      <h4>Your Balance</h4>
+      <h2 id="balance">$0.00</h2>
+    </div>
+    <div class="income-expense">
+      <div class="income">
+        <h4>Income</h4>
+        <p id="money-plus" class="money-plus">+$0.00</p>
+      </div>
+      <div class="expense">
+        <h4>Expense</h4>
+        <p id="money-minus" class="money-minus">-$0.00</p>
+      </div>
+    </div>
+    <h3>Add New Transaction</h3>
+    <form id="form">
+      <label for="text">Transaction Name</label>
+      <input type="text" id="text" placeholder="Enter text..." required>
+      <label for="amount">Amount <br> (negative - expense, positive - income)</label>
+      <input type="number" id="amount" placeholder="Enter amount..." required>
+      <button type="submit">Add Transaction</button>
+    </form>
+    <h3>History</h3>
+    <ul id="list"></ul>
+  </div>
+
+  <script>
+    const balance = document.getElementById('balance');
+    const money_plus = document.getElementById('money-plus');
+    const money_minus = document.getElementById('money-minus');
+    const list = document.getElementById('list');
+    const form = document.getElementById('form');
+    const text = document.getElementById('text');
+    const amount = document.getElementById('amount');
+
+    let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+
+    // Add Transaction
+    function addTransaction(e) {
+      e.preventDefault();
+
+      const transaction = {
+        id: Math.floor(Math.random() * 1000000),
+        text: text.value,
+        amount: +amount.value
+      };
+
+      transactions.push(transaction);
+      addTransactionDOM(transaction);
+      updateValues();
+      updateLocalStorage();
+
+      text.value = '';
+      amount.value = '';
+    }
+
+    // Add Transaction to DOM
+    function addTransactionDOM(transaction) {
+      const sign = transaction.amount < 0 ? '-' : '+';
+      const item = document.createElement('li');
+      item.innerHTML = `
+        ${transaction.text} 
+        <span class="${transaction.amount < 0 ? 'money-minus' : 'money-plus'}">
+          ${sign}$${Math.abs(transaction.amount).toFixed(2)}
+        </span>
+        <button class="delete-btn" onclick="removeTransaction(${transaction.id})">❌</button>
+      `;
+      list.appendChild(item);
+    }
+
+    // Update Balance, Income, Expense
+    function updateValues() {
+      const amounts = transactions.map(transaction => transaction.amount);
+      const total = amounts.reduce((acc, item) => acc + item, 0).toFixed(2);
+      const income = amounts
+        .filter(item => item > 0)
+        .reduce((acc, item) => acc + item, 0)
+        .toFixed(2);
+      const expense = (
+        amounts.filter(item => item < 0).reduce((acc, item) => acc + item, 0) * -1
+      ).toFixed(2);
+
+      balance.innerText = `$${total}`;
+      money_plus.innerText = `+$${income}`;
+      money_minus.innerText = `-$${expense}`;
+    }
+
+    // Remove Transaction
+    function removeTransaction(id) {
+      transactions = transactions.filter(transaction => transaction.id !== id);
+      updateLocalStorage();
+      init();
+    }
+
+    // Update Local Storage
+    function updateLocalStorage() {
+      localStorage.setItem('transactions', JSON.stringify(transactions));
+    }
+
+    // Init App
+    function init() {
+      list.innerHTML = '';
+      transactions.forEach(addTransactionDOM);
+      updateValues();
+    }
+
+    init();
+
+    form.addEventListener('submit', addTransaction);
+  </script>
+</body>
+</html>
