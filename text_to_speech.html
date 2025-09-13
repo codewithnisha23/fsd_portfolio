@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Text-to-Speech Converter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0fdf4; /* light green background */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      padding: 10px;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0px 6px 15px rgba(0,0,0,0.15);
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    h1 {
+      color: #16a34a;
+      margin-bottom: 15px;
+      font-size: 1.6rem;
+    }
+
+    textarea {
+      width: 100%;
+      height: 120px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 15px;
+      font-size: 1rem;
+      resize: none;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+
+    button {
+      background: #16a34a;
+      color: #fff;
+      border: none;
+      padding: 12px 18px;
+      margin: 5px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 1rem;
+    }
+
+    button:hover {
+      background: #15803d;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.3rem;
+      }
+      textarea {
+        height: 100px;
+        font-size: 0.9rem;
+      }
+      select, button {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Text-to-Speech Converter</h1>
+    <textarea id="text" placeholder="Type something to hear it..."></textarea>
+    <select id="voices"></select>
+    <button onclick="speak()">🔊 Speak</button>
+    <button onclick="stop()">⏹ Stop</button>
+  </div>
+
+  <script>
+    const textEl = document.getElementById("text");
+    const voicesEl = document.getElementById("voices");
+    let voices = [];
+
+    // Populate voice list
+    function loadVoices() {
+      voices = speechSynthesis.getVoices();
+      voicesEl.innerHTML = "";
+      voices.forEach((voice, i) => {
+        const option = document.createElement("option");
+        option.value = i;
+        option.textContent = `${voice.name} (${voice.lang})`; // Fixed template literal syntax
+        voicesEl.appendChild(option);
+      });
+    }
+
+    // Reload voices when available
+    speechSynthesis.onvoiceschanged = loadVoices;
+
+    function speak() {
+      const text = textEl.value.trim();
+      if (!text) {
+        alert("Please type something!");
+        return;
+      }
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      const selectedVoice = voices[voicesEl.value];
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+      }
+      speechSynthesis.speak(utterance);
+    }
+
+    function stop() {
+      speechSynthesis.cancel();
+    }
+
+    // Initial call
+    loadVoices();
+  </script>
+</body>
+</html>
