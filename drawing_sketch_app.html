@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Day 13 - Drawing App</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #e8f5e9;
+      height: 100vh;
+    }
+    h2 {
+      margin: 10px;
+      color: #2e7d32;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+      justify-content: center;
+    }
+    button, input[type="color"], input[type="range"] {
+      padding: 8px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button {
+      background: #388e3c;
+      color: white;
+    }
+    button:hover {
+      background: #2e7d32;
+    }
+    #canvas {
+      border: 2px solid #2e7d32;
+      border-radius: 8px;
+      background: white;
+      touch-action: none; /* important for mobile touch */
+    }
+    @media (max-width: 600px) {
+      #canvas {
+        width: 90vw;
+        height: 60vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h2>🎨 Day 13 - Drawing App</h2>
+
+  <div class="toolbar">
+    <input type="color" id="colorPicker" value="#000000">
+    <input type="range" id="brushSize" min="2" max="20" value="5">
+    <button id="eraser">Eraser</button>
+    <button id="clear">Clear</button>
+    <button id="save">Save</button>
+  </div>
+
+  <canvas id="canvas" width="800" height="500"></canvas>
+
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    let drawing = false;
+    let brushColor = document.getElementById("colorPicker").value;
+    let brushSize = document.getElementById("brushSize").value;
+
+    // Set up canvas background white
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    function startDraw(e) {
+      drawing = true;
+      draw(e);
+    }
+
+    function endDraw() {
+      drawing = false;
+      ctx.beginPath();
+    }
+
+    function getPosition(e) {
+      if (e.touches) {
+        return {
+          x: e.touches[0].clientX - canvas.getBoundingClientRect().left,
+          y: e.touches[0].clientY - canvas.getBoundingClientRect().top
+        };
+      }
+      return {
+        x: e.clientX - canvas.getBoundingClientRect().left,
+        y: e.clientY - canvas.getBoundingClientRect().top
+      };
+    }
+
+    function draw(e) {
+      if (!drawing) return;
+      const pos = getPosition(e);
+
+      ctx.lineWidth = brushSize;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = brushColor;
+
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+    }
+
+    // Mouse Events
+    canvas.addEventListener("mousedown", startDraw);
+    canvas.addEventListener("mouseup", endDraw);
+    canvas.addEventListener("mousemove", draw);
+
+    // Touch Events
+    canvas.addEventListener("touchstart", startDraw);
+    canvas.addEventListener("touchend", endDraw);
+    canvas.addEventListener("touchmove", draw);
+
+    // Toolbar controls
+    document.getElementById("colorPicker").addEventListener("change", (e) => {
+      brushColor = e.target.value;
+    });
+
+    document.getElementById("brushSize").addEventListener("input", (e) => {
+      brushSize = e.target.value;
+    });
+
+    document.getElementById("eraser").addEventListener("click", () => {
+      brushColor = "white";
+    });
+
+    document.getElementById("clear").addEventListener("click", () => {
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    });
+
+    document.getElementById("save").addEventListener("click", () => {
+      const link = document.createElement("a");
+      link.download = "drawing.png";
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+  </script>
+</body>
+</html>
