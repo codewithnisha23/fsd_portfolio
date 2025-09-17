@@ -1,45 +1,21 @@
-async function getWeather() {
-    const city = document.getElementById("cityInput").value.trim();
+function generateQR() {
+    let qrText = document.getElementById("qrText").value;
+    let qrImage = document.getElementById("qrImage");
+    let qrBox = document.getElementById("qrBox");
+    let downloadBtn = document.getElementById("downloadBtn");
   
-    if (!city) {
-      document.getElementById("weatherResult").innerHTML = `
-        <p style="color:red;">⚠ Please enter a city name.</p>
-      `;
-      return;
-    }
+    if (qrText.trim().length === 0) {
+      alert("Please enter text or URL");
+      return;
+    }
   
-    const apiKey = "cf0f9d55a3ae1fd9dd9c68a1259ef487"; // 🔑 Replace with your OpenWeatherMap API key
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
-  
-    document.getElementById("weatherResult").innerHTML = "<p>Loading...</p>";
-  
-    try {
-      const response = await fetch(url);
-      const data = await response.json();
-  
-      if (response.ok) {
-        const iconCode = data.weather[0].icon;
-        const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
-  
-        document.getElementById("weatherResult").innerHTML = `
-          <p><strong>${data.name}, ${data.sys.country}</strong></p>
-          <img src="${iconUrl}" alt="Weather Icon" class="weather-icon">
-          <p>🌡 Temp: ${data.main.temp}°C</p>
-          <p>💧 Humidity: ${data.main.humidity}%</p>
-          <p>🌥 Condition: ${data.weather[0].description}</p>
-        `;
-      } else {
-        document.getElementById("weatherResult").innerHTML = `
-          <p style="color:red;">❌ City not found.</p>
-          <p>👉 Check spelling or try adding country code (e.g., "Delhi, IN").</p>
-        `;
-      }
-    } catch (error) {
-      document.getElementById("weatherResult").innerHTML = `
-        <p style="color:red;">⚠ Unable to fetch weather data.</p>
-        <p>Please check your internet connection or API key.</p>
-      `;
-    }
+    // Using free QR code API
+    let qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(qrText);
+    
+    qrImage.src = qrUrl;
+    qrBox.style.display = "block";
+    
+    // Set download link
+    downloadBtn.href = qrUrl;
+    downloadBtn.style.display = "inline-block";
   }
-  
-  
