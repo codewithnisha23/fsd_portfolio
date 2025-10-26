@@ -1,21 +1,59 @@
-function generateQR() {
-    let qrText = document.getElementById("qrText").value;
-    let qrImage = document.getElementById("qrImage");
-    let qrBox = document.getElementById("qrBox");
-    let downloadBtn = document.getElementById("downloadBtn");
-  
-    if (qrText.trim().length === 0) {
-      alert("Please enter text or URL");
-      return;
+let workTime = 25 * 60;  // 25 minutes
+let breakTime = 5 * 60;  // 5 minutes
+let timeLeft = workTime;
+let isRunning = false;
+let isWorkSession = true;
+let timer;
+
+const minutes = document.getElementById("minutes");
+const seconds = document.getElementById("seconds");
+const startBtn = document.getElementById("start");
+const pauseBtn = document.getElementById("pause");
+const resetBtn = document.getElementById("reset");
+const label = document.getElementById("session-label");
+
+function updateDisplay() {
+  const mins = Math.floor(timeLeft / 60);
+  const secs = timeLeft % 60;
+  minutes.textContent = String(mins).padStart(2, "0");
+  seconds.textContent = String(secs).padStart(2, "0");
+}
+
+function startTimer() {
+  if (isRunning) return;
+  isRunning = true;
+  timer = setInterval(() => {
+    timeLeft--;
+    updateDisplay();
+
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      isRunning = false;
+      isWorkSession = !isWorkSession;
+      timeLeft = isWorkSession ? workTime : breakTime;
+      label.textContent = isWorkSession ? "Work Session" : "Break Time ☕";
+      alert(isWorkSession ? "Back to work!" : "Break time! 🎉");
+      updateDisplay();
     }
-  
-    // Using free QR code API
-    let qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(qrText);
-    
-    qrImage.src = qrUrl;
-    qrBox.style.display = "block";
-    
-    // Set download link
-    downloadBtn.href = qrUrl;
-    downloadBtn.style.display = "inline-block";
-  }
+  }, 1000);
+}
+
+function pauseTimer() {
+  clearInterval(timer);
+  isRunning = false;
+}
+
+function resetTimer() {
+  clearInterval(timer);
+  isRunning = false;
+  isWorkSession = true;
+  timeLeft = workTime;
+  label.textContent = "Work Session";
+  updateDisplay();
+}
+
+startBtn.addEventListener("click", startTimer);
+pauseBtn.addEventListener("click", pauseTimer);
+resetBtn.addEventListener("click", resetTimer);
+
+updateDisplay();
