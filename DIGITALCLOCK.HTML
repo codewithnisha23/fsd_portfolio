@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Clock with Dark Mode</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: var(--bg);
+      transition: background 0.5s, color 0.5s;
+      color: var(--text);
+    }
+
+    :root {
+      --bg: #f2f2f2;
+      --text: #222;
+      --accent: #4a90e2;
+    }
+    body.dark {
+      --bg: #121212;
+      --text: #f2f2f2;
+      --accent: #ffd700;
+    }
+
+    .clock-container {
+      text-align: center;
+      padding: 40px;
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    #clock {
+      font-size: 60px;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+
+    #date {
+      font-size: 18px;
+      color: var(--accent);
+    }
+
+    .toggle-btn {
+      margin-top: 20px;
+      padding: 10px 25px;
+      border: none;
+      border-radius: 5px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .toggle-btn:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <div class="clock-container">
+    <h1 id="clock">00:00:00</h1>
+    <p id="date">--/--/----</p>
+    <button class="toggle-btn" id="toggle">🌞 Light Mode</button>
+  </div>
+
+  <script>
+    const clock = document.getElementById("clock");
+    const dateEl = document.getElementById("date");
+    const toggle = document.getElementById("toggle");
+
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, "0");
+      const m = String(now.getMinutes()).padStart(2, "0");
+      const s = String(now.getSeconds()).padStart(2, "0");
+      clock.textContent = `${h}:${m}:${s}`;
+      const dateStr = now.toDateString();
+      dateEl.textContent = dateStr;
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Dark mode toggle
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+      document.body.classList.add("dark");
+      toggle.textContent = "🌙 Dark Mode";
+    }
+
+    toggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      const isDark = document.body.classList.contains("dark");
+      toggle.textContent = isDark ? "🌙 Dark Mode" : "🌞 Light Mode";
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+    });
+  </script>
+</body>
+</html>
