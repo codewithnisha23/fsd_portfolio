@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gradient Background Generator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+    }
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(to right, #ff7e5f, #feb47b);
+      transition: background 0.5s;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 40px;
+      border-radius: 15px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+    h1 {
+      color: #fff;
+      margin-bottom: 20px;
+    }
+    .color-inputs {
+      margin-bottom: 20px;
+    }
+    input[type="color"] {
+      margin: 10px;
+      width: 50px;
+      height: 50px;
+      border: none;
+      cursor: pointer;
+    }
+    button {
+      background: #fff;
+      color: #333;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #333;
+      color: #fff;
+    }
+    #css-code {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px;
+      color: #fff;
+      margin-top: 15px;
+      border-radius: 5px;
+      font-size: 14px;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🌈 Gradient Background Generator</h1>
+    <div class="color-inputs">
+      <input type="color" id="color1" value="#ff7e5f">
+      <input type="color" id="color2" value="#feb47b">
+    </div>
+    <button id="generate">Generate Gradient</button>
+    <button id="copy">Copy CSS</button>
+    <p id="css-code">linear-gradient(to right, #ff7e5f, #feb47b);</p>
+  </div>
+
+  <script>
+    const color1 = document.getElementById("color1");
+    const color2 = document.getElementById("color2");
+    const cssCode = document.getElementById("css-code");
+    const generateBtn = document.getElementById("generate");
+    const copyBtn = document.getElementById("copy");
+
+    function setGradient() {
+      const gradient = `linear-gradient(to right, ${color1.value}, ${color2.value})`;
+      document.body.style.background = gradient;
+      cssCode.textContent = gradient + ";";
+    }
+
+    function randomColor() {
+      const letters = "0123456789ABCDEF";
+      let color = "#";
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+    generateBtn.addEventListener("click", () => {
+      color1.value = randomColor();
+      color2.value = randomColor();
+      setGradient();
+    });
+
+    copyBtn.addEventListener("click", () => {
+      navigator.clipboard.writeText(cssCode.textContent);
+      copyBtn.textContent = "Copied!";
+      setTimeout(() => (copyBtn.textContent = "Copy CSS"), 1000);
+    });
+
+    color1.addEventListener("input", setGradient);
+    color2.addEventListener("input", setGradient);
+
+    setGradient();
+  </script>
+</body>
+</html>
