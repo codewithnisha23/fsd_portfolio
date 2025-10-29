@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Note Summarizer</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #f5f6fa;
+      color: #2f3640;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      width: 80%;
+      max-width: 700px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #273c75;
+      margin-bottom: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 150px;
+      border: 2px solid #dcdde1;
+      border-radius: 12px;
+      padding: 10px;
+      font-size: 16px;
+      resize: none;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    textarea:focus {
+      border-color: #718093;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      margin-top: 20px;
+      padding: 12px;
+      background: #273c75;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #40739e;
+    }
+
+    .output {
+      margin-top: 25px;
+      padding: 15px;
+      background: #f1f2f6;
+      border-radius: 12px;
+      min-height: 80px;
+      font-size: 15px;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+      color: #718093;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>AI Note Summarizer</h1>
+    <textarea id="inputText" placeholder="Paste or type your text here..."></textarea>
+    <button onclick="summarizeText()">Summarize</button>
+    <div class="output" id="output"></div>
+    <footer>Developed by Nisha Thakur 💻</footer>
+  </div>
+
+  <script>
+    function summarizeText() {
+      let text = document.getElementById("inputText").value.trim();
+      let output = document.getElementById("output");
+
+      if (text.length < 50) {
+        output.innerHTML = "Please enter a longer text to summarize.";
+        return;
+      }
+
+      // Basic offline summarization logic
+      let sentences = text.match(/[^.!?]*[.!?]/g);
+      if (!sentences) {
+        output.innerHTML = "Please enter valid sentences.";
+        return;
+      }
+
+      // Count word frequency
+      let wordFreq = {};
+      text.toLowerCase()
+        .replace(/[^a-z\s]/g, "")
+        .split(/\s+/)
+        .forEach(word => {
+          if (word.length > 3) wordFreq[word] = (wordFreq[word] || 0) + 1;
+        });
+
+      // Score sentences
+      let scored = sentences.map(sentence => {
+        let words = sentence.toLowerCase().split(/\s+/);
+        let score = words.reduce((acc, w) => acc + (wordFreq[w] || 0), 0);
+        return { sentence, score };
+      });
+
+      // Pick top 3 sentences
+      scored.sort((a, b) => b.score - a.score);
+      let summary = scored.slice(0, 3).map(s => s.sentence).join(" ");
+
+      output.innerHTML =` <strong>Summary:</strong><br>${summary}`;
+    }
+  </script>
+</body>
+</html>
