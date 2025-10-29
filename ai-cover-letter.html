@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Cover Letter Generator</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #f5f6fa;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      width: 80%;
+      max-width: 700px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+      padding: 30px;
+    }
+    h1 {
+      text-align: center;
+      color: #273c75;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+      color: #2f3640;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #dcdde1;
+      border-radius: 10px;
+      font-size: 15px;
+      margin-top: 5px;
+      outline: none;
+      transition: 0.3s;
+    }
+    input:focus, textarea:focus {
+      border-color: #718093;
+    }
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 12px;
+      background: #273c75;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #40739e;
+    }
+    .output {
+      margin-top: 25px;
+      background: #f1f2f6;
+      padding: 15px;
+      border-radius: 12px;
+      min-height: 150px;
+      white-space: pre-wrap;
+    }
+    footer {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+      color: #718093;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>AI Cover Letter Generator</h1>
+
+    <label>Your Name:</label>
+    <input type="text" id="name" placeholder="Enter your full name" />
+
+    <label>Job Title:</label>
+    <input type="text" id="jobTitle" placeholder="e.g., Frontend Developer" />
+
+    <label>Company Name:</label>
+    <input type="text" id="company" placeholder="e.g., Google, Inc." />
+
+    <label>Your Top Skills:</label>
+    <textarea id="skills" placeholder="e.g., HTML, CSS, JavaScript, React"></textarea>
+
+    <button onclick="generateLetter()">Generate Cover Letter</button>
+
+    <div class="output" id="output"></div>
+
+    <footer>Developed by Nisha Thakur 💼</footer>
+  </div>
+
+  <script>
+    function generateLetter() {
+      const name = document.getElementById("name").value.trim();
+      const jobTitle = document.getElementById("jobTitle").value.trim();
+      const company = document.getElementById("company").value.trim();
+      const skills = document.getElementById("skills").value.trim();
+      const output = document.getElementById("output");
+
+      if (!name || !jobTitle || !company || !skills) {
+        output.innerHTML = "⚠ Please fill in all fields before generating your cover letter.";
+        return;
+      }
+
+      const today = new Date().toLocaleDateString();
+
+      const letter = `
+${today}
+
+Dear Hiring Manager,
+
+I am writing to express my keen interest in the position of ${jobTitle} at ${company}. With strong proficiency in ${skills}, I am confident in my ability to contribute effectively to your team and help achieve your organization's goals.
+
+Throughout my projects and experiences, I have developed a passion for problem-solving, attention to detail, and creating meaningful digital solutions. My approach focuses on combining creativity with functionality, ensuring that my work aligns with user needs and company objectives.
+
+I am excited about the opportunity to bring my skills and enthusiasm to ${company} and contribute to its continued growth. I would welcome the chance to discuss how I can add value to your team.
+
+Thank you for considering my application.
+
+Sincerely,  
+${name}
+      `;
+
+      output.textContent = letter;
+    }
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
