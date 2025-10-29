@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Email Writer</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #f5f6fa;
+      color: #2f3640;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      width: 80%;
+      max-width: 700px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+      padding: 30px;
+    }
+    h1 {
+      text-align: center;
+      color: #273c75;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+      color: #2f3640;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #dcdde1;
+      border-radius: 10px;
+      font-size: 15px;
+      margin-top: 5px;
+      outline: none;
+      transition: 0.3s;
+    }
+    input:focus, select:focus {
+      border-color: #718093;
+    }
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 12px;
+      background: #273c75;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #40739e;
+    }
+    .output {
+      margin-top: 25px;
+      background: #f1f2f6;
+      padding: 15px;
+      border-radius: 12px;
+      min-height: 150px;
+      white-space: pre-wrap;
+    }
+    footer {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+      color: #718093;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>AI Email Writer</h1>
+
+    <label>Enter Email Topic:</label>
+    <input type="text" id="topic" placeholder="e.g., Request for internship opportunity" />
+
+    <label>Select Tone:</label>
+    <select id="tone">
+      <option value="formal">Formal</option>
+      <option value="friendly">Friendly</option>
+      <option value="casual">Casual</option>
+    </select>
+
+    <button onclick="generateEmail()">Generate Email</button>
+
+    <div class="output" id="output"></div>
+
+    <footer>Developed by Nisha Thakur 💌</footer>
+  </div>
+
+  <script>
+    function generateEmail() {
+      const topic = document.getElementById("topic").value.trim();
+      const tone = document.getElementById("tone").value;
+      const output = document.getElementById("output");
+
+      if (!topic) {
+        output.innerHTML = "⚠ Please enter an email topic.";
+        return;
+      }
+
+      let greeting, body, closing;
+
+      if (tone === "formal") {
+        greeting = "Dear Sir/Madam,";
+        body = `I hope this message finds you well. I am writing to discuss ${topic}. I would appreciate your time and consideration on this matter, as it holds significant importance to me.`;
+        closing = "Sincerely,\nNisha Thakur";
+      } 
+      else if (tone === "friendly") {
+        greeting = "Hello,";
+        body = `I wanted to reach out regarding ${topic}. It would be great to hear your thoughts or advice on this!`;
+        closing = "Warm regards,\nNisha Thakur";
+      } 
+      else {
+        greeting = "Hey there,";
+        body = `Just dropping a quick note about ${topic}. Would love to catch up and talk more about it sometime!`;
+        closing = "Cheers,\nNisha Thakur";
+      }
+
+      const email = `${greeting}\n\n${body}\n\n${closing}`;
+      output.textContent = email;
+    }
+  </script>
+</body>
+</html>
