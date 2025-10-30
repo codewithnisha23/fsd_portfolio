@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Tic Tac Toe — Day 30</title>
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<style>
+  :root{
+    --bg: #f6f8fb; --card:#ffffff; --accent:#0b5ed7; --muted:#6b7280;
+    --x:#ef4444; --o:#0ea5a4;
+  }
+  *{box-sizing:border-box}
+  body{font-family:Inter,system-ui,Arial;margin:0;background:linear-gradient(180deg,#eef2ff 0%,#f6f8fb 100%);color:#0f1724;display:flex;min-height:100vh;align-items:center;justify-content:center;padding:24px}
+  .wrap{max-width:930px;width:100%;display:grid;grid-template-columns:1fr 360px;gap:22px}
+  @media (max-width:900px){.wrap{grid-template-columns:1fr;}}
+  .board-card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 8px 30px rgba(2,6,23,0.06)}
+  .controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+  h1{margin:0 0 6px;font-size:20px}
+  p.lead{margin:0;color:var(--muted);font-size:14px}
+  .board{width:100%;max-width:600px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+  .cell{aspect-ratio:1/1;background:linear-gradient(180deg,rgba(255,255,255,0.6),#fff);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:48px;font-weight:700;cursor:pointer;transition:transform .12s,box-shadow .12s}
+  .cell:focus{outline:3px solid rgba(11,94,215,0.12)}
+  .cell:hover{transform:translateY(-4px);box-shadow:0 10px 30px rgba(2,6,23,0.06)}
+  .cell.disabled{cursor:not-allowed;opacity:.88}
+  .status{margin-top:12px;font-weight:600}
+  .sidebar{display:flex;flex-direction:column;gap:12px}
+  .card-row{display:flex;gap:8px;align-items:center}
+  select,input[type="radio"]{padding:8px;border-radius:8px;border:1px solid #e6eef8;background:#fff}
+  button.btn{padding:10px 12px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--accent),#6c5ce7);color:#fff;font-weight:700;cursor:pointer}
+  button.ghost{background:transparent;border:1px solid #e6eef8;color:var(--muted);font-weight:600}
+  .score{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:10px;border-radius:8px;background:linear-gradient(180deg,#ffffff,#fbfdff);box-shadow:inset 0 1px 0 rgba(255,255,255,0.6)}
+  .tag{padding:6px 8px;border-radius:8px;background:rgba(11,94,215,0.08);color:var(--accent);font-weight:600}
+  .small{font-size:13px;color:var(--muted)}
+  .highlight-x{color:var(--x)}
+  .highlight-o{color:var(--o)}
+  footer{margin-top:12px;color:var(--muted);font-size:13px;text-align:center}
+  /* win line animation */
+  .win .cell{background:linear-gradient(90deg, rgba(250,250,255,0.8), rgba(255,255,255,0.9));}
+  .win .cell.winner{box-shadow:0 6px 24px rgba(14,165,164,0.14);transform:scale(1.05)}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="board-card" aria-live="polite">
+      <div class="controls" role="group" aria-label="Game controls">
+        <div>
+          <h1>Tic Tac Toe</h1>
+          <p class="lead">Play vs Friend or Computer — classic 3×3 strategy for quick fun.</p>
+        </div>
+        <div style="margin-left:auto" class="tag">Day 30</div>
+      </div>
+
+      <div class="card-row" style="gap:12px;align-items:center">
+        <label class="small">Mode</label>
+        <select id="mode">
+          <option value="pvp">2 Players (Local)</option>
+          <option value="pvai">Play vs Computer</option>
+        </select>
+
+        <label class="small" style="margin-left:6px">Difficulty</label>
+        <select id="difficulty" disabled>
+          <option value="easy">Easy (Random)</option>
+          <option value="hard">Hard (Unbeatable)</option>
+        </select>
+
+        <button id="newBtn" class="btn" style="margin-left:auto">New Game</button>
+        <button id="resetBtn" class="ghost">Reset Scores</button>
+      </div>
+
+      <div class="board" id="board" role="grid" aria-label="Tic Tac Toe board" tabindex="0">
+        <!-- 9 cells -->
+      </div>
+
+      <div class="status" id="status">Turn: <span id="turnIndicator" class="highlight-x">X</span></div>
+      <div class="small" id="substatus">First to play: X</div>
+      <footer>Tip: Use keyboard arrows to focus and Enter to place a mark.</footer>
+    </div>
+
+    <aside class="sidebar">
+      <div class="board-card score">
+        <div>
+          <div style="font-weight:700">Scoreboard</div>
+          <div class="small">Tracks wins, draws, and current player</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-weight:700"><span id="scoreX">0</span> <span class="small highlight-x">X</span></div>
+          <div style="font-weight:700"><span id="scoreO">0</span> <span class="small highlight-o">O</span></div>
+          <div style="margin-top:6px"><span id="draws">0</span> Draws</div>
+        </div>
+      </div>
+
+      <div class="board-card">
+        <div style="font-weight:700">Quick Help</div>
+        <ul class="small" style="margin:8px 0 0 18px">
+          <li>Try to make three in a row to win</li>
+          <li>Play vs Computer for practice</li>
+          <li>Hard mode uses unbeatable AI</li>
+        </ul>
+      </div>
+
+      <div class="board-card">
+        <div style="font-weight:700">Options</div>
+        <div style="margin-top:8px">
+          <label class="small">Starting player</label>
+          <div style="display:flex;gap:8px;margin-top:6px">
+            <label><input type="radio" name="start" value="X" checked> X</label>
+            <label><input type="radio" name="start" value="O"> O</label>
+          </div>
+
+          <label class="small" style="margin-top:10px">Markers</label>
+          <div style="display:flex;gap:8px;margin-top:6px">
+            <button id="swapBtn" class="ghost">Swap X/O</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="board-card small" style="text-align:center">
+        Built by Nisha Thakur — Day 30 · FSD Challenge
+      </div>
+    </aside>
+  </div>
+
+<script>
+/* Tic Tac Toe logic with optional minimax AI */
+
+const boardEl = document.getElementById('board');
+const modeEl = document.getElementById('mode');
+const difficultyEl = document.getElementById('difficulty');
+const newBtn = document.getElementById('newBtn');
+const resetBtn = document.getElementById('resetBtn');
+const swapBtn = document.getElementById('swapBtn');
+const turnIndicator = document.getElementById('turnIndicator');
+const statusEl = document.getElementById('status');
+const substatus = document.getElementById('substatus');
+const scoreXEl = document.getElementById('scoreX');
+const scoreOEl = document.getElementById('scoreO');
+const drawsEl = document.getElementById('draws');
+
+let board = Array(9).fill('');
+let current = 'X';
+let human = {X:'X', O:'O'}; // mapping (allows swapping)
+let scores = {X:0, O:0, D:0};
+let waiting = false; // during AI move
+let startPlayer = 'X';
+
+const winCombinations = [
+  [0,1,2],[3,4,5],[6,7,8],
+  [0,3,6],[1,4,7],[2,5,8],
+  [0,4,8],[2,4,6]
+];
+
+function createBoard(){
+  boardEl.innerHTML = '';
+  for(let i=0;i<9;i++){
+    const cell = document.createElement('button');
+    cell.className = 'cell';
+    cell.setAttribute('role','gridcell');
+    cell.setAttribute('data-index', i);
+    cell.tabIndex = 0;
+    cell.addEventListener('click', onCellClick);
+    cell.addEventListener('keydown', onCellKeydown);
+    boardEl.appendChild(cell);
+  }
+}
+
+function onCellKeydown(e){
+  // Enter to place; arrows to navigate
+  const idx = Number(this.dataset.index);
+  if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); this.click(); return; }
+  const cols = 3;
+  let nxt;
+  if(e.key === 'ArrowRight') nxt = (idx % cols === cols-1)? idx-cols+1 : idx+1;
+  if(e.key === 'ArrowLeft') nxt = (idx % cols === 0)? idx+cols-1 : idx-1;
+  if(e.key === 'ArrowDown') nxt = (idx+cols)%9;
+  if(e.key === 'ArrowUp') nxt = (idx-cols+9)%9;
+  if(nxt !== undefined) boardEl.children[nxt].focus();
+}
+
+function onCellClick(e){
+  if(waiting) return;
+  const idx = Number(this.dataset.index);
+  if(board[idx]) return; // occupied
+  if(modeEl.value === 'pvai' && current !== humanTurn()) return; // if computer's turn, block
+  placeMove(idx, current);
+  render();
+  const end = checkEnd();
+  if(end) { handleEnd(end); return; }
+  toggleTurn();
+  if(modeEl.value === 'pvai' && current !== humanTurn()){
+    aiMove();
+  }
+}
+
+function humanTurn(){ return (human.X === 'X') ? 'X' : 'O'; }
+
+function placeMove(i, p){
+  board[i] = p;
+}
+
+function toggleTurn(){
+  current = current === 'X' ? 'O' : 'X';
+  updateTurnUI();
+}
+
+function updateTurnUI(){
+  turnIndicator.textContent = current;
+  turnIndicator.className = current === 'X' ? 'highlight-x' : 'highlight-o';
+  substatus.textContent = `First to play: ${startPlayer} | Mode: ${modeEl.value === 'pvp' ? '2 Players' : 'vs Computer'}`
+}
+
+function render(){
+  for(let i=0;i<9;i++){
+    const c = boardEl.children[i];
+    c.textContent = board[i];
+    c.classList.toggle('disabled', !!board[i]);
+    c.classList.remove('winner');
+    if(board[i] === 'X') c.style.color = 'var(--x)';
+    else if(board[i] === 'O') c.style.color = 'var(--o)';
+    else c.style.color = '';
+  }
+}
+
+function checkEnd(){
+  // return {winner:'X'|'O'|null, combo:[...] } or {draw:true}
+  for(const combo of winCombinations){
+    const [a,b,c] = combo;
+    if(board[a] && board[a] === board[b] && board[a] === board[c]){
+      return { winner: board[a], combo };
+    }
+  }
+  if(board.every(Boolean)) return { draw:true };
+  return null;
+}
+
+function handleEnd(result){
+  if(result.draw){
+    scores.D++;
+    drawsEl.textContent = scores.D;
+    statusEl.innerHTML = `Result: <strong>Draw</strong>`;
+    animateWin([]);
+  } else {
+    scores[result.winner]++;
+    statusEl.innerHTML = `Winner: <strong class="${result.winner === 'X' ? 'highlight-x' : 'highlight-o'}">${result.winner}</strong>`;
+    scoreXEl.textContent = scores.X;
+    scoreOEl.textContent = scores.O;
+    animateWin(result.combo);
+  }
+  // disable board
+  waiting = true;
+  // small delay then allow new rounds
+  setTimeout(()=>{ waiting = false; }, 800);
+}
+
+function animateWin(combo){
+  if(!combo || combo.length === 0){
+    // draw: highlight all a bit
+    boardEl.classList.add('win');
+    boardEl.querySelectorAll('.cell').forEach(c=>c.classList.remove('winner'));
+    setTimeout(()=> boardEl.classList.remove('win'), 800);
+    return;
+  }
+  boardEl.classList.add('win');
+  combo.forEach(i=>{
+    const el = boardEl.children[i];
+    el.classList.add('winner');
+  });
+  setTimeout(()=> boardEl.classList.remove('win'), 900);
+}
+
+function resetBoard(newStart=false){
+  board = Array(9).fill('');
+  // optionally toggle who starts
+  if(newStart){
+    startPlayer = (document.querySelector('input[name="start"]:checked').value);
+    current = startPlayer;
+  } else {
+    current = startPlayer;
+  }
+  waiting = false;
+  render();
+  updateTurnUI();
+  statusEl.textContent = 'Turn: ' + current;
+}
+
+// AI functions
+function aiMove(){
+  waiting = true;
+  const diff = difficultyEl.value;
+  setTimeout(()=>{
+    let i;
+    if(diff === 'easy') i = randomMove();
+    else i = bestMove(board, current);
+    placeMove(i, current);
+    render();
+    const end = checkEnd();
+    if(end){ handleEnd(end); waiting=false; return; }
+    toggleTurn();
+    waiting=false;
+  }, 400);
+}
+
+function randomMove(){
+  const open = board.map((v,i)=> v? null:i).filter(n=>n!==null);
+  return open[Math.floor(Math.random()*open.length)];
+}
+
+// Minimax (hard mode)
+function bestMove(bd, player){
+  // AI plays as current (player param)
+  const opponent = player === 'X' ? 'O' : 'X';
+
+  const avail = bd.map((v,i)=> v? null:i).filter(n=>n!==null);
+  if(avail.length === 9) return Math.floor(Math.random()*9); // start
+  let bestScore = -Infinity;
+  let move = avail[0];
+
+  for(const idx of avail){
+    const copy = bd.slice();
+    copy[idx] = player;
+    const score = minimax(copy, opponent, player);
+    if(score > bestScore){
+      bestScore = score;
+      move = idx;
+    }
+  }
+  return move;
+}
+
+// returns score from perspective of 'ai' (the original player)
+function minimax(bd, player, ai){
+  const end = checkBoardEnd(bd);
+  if(end){
+    if(end.winner === ai) return 10;
+    if(end.winner && end.winner !== ai) return -10;
+    if(end.draw) return 0;
+  }
+
+  const avail = bd.map((v,i)=> v? null:i).filter(n=>n!==null);
+  let scores = [];
+  for(const idx of avail){
+    const copy = bd.slice();
+    copy[idx] = player;
+    const next = player === 'X' ? 'O' : 'X';
+    scores.push(minimax(copy, next, ai));
+  }
+  // if it's ai's turn earlier (we called with player maybe different) we choose max/min depending on who
+  // Determine whose turn it is relative to ai: if player === ai -> maximize, else minimize
+  if(player === ai) return Math.max(...scores);
+  return Math.min(...scores);
+}
+
+function checkBoardEnd(bd){
+  for(const combo of winCombinations){
+    const [a,b,c] = combo;
+    if(bd[a] && bd[a] === bd[b] && bd[a] === bd[c]){
+      return { winner: bd[a], combo };
+    }
+  }
+  if(bd.every(Boolean)) return { draw:true };
+  return null;
+}
+
+// UI wiring
+modeEl.addEventListener('change', ()=>{
+  difficultyEl.disabled = modeEl.value !== 'pvai';
+  resetBoard(true);
+  if(modeEl.value === 'pvai' && difficultyEl.value && current !== humanTurn()){
+    // if computer starts
+    aiMove();
+  }
+});
+
+difficultyEl.addEventListener('change', ()=>{ resetBoard(true); if(modeEl.value==='pvai' && current!==humanTurn()) aiMove(); });
+newBtn.addEventListener('click', ()=>{ resetBoard(true); });
+resetBtn.addEventListener('click', ()=>{
+  scores = {X:0, O:0, D:0};
+  scoreXEl.textContent = 0; scoreOEl.textContent = 0; drawsEl.textContent = 0;
+  resetBoard(true);
+});
+swapBtn.addEventListener('click', ()=>{
+  // swap human mapping (X/O markers)
+  const tmp = human.X; human.X = human.O; human.O = tmp;
+  alert(`Markers swapped. X is now ${human.X}.`);
+  resetBoard(true);
+});
+
+// keyboard: N for new game, R to reset scores
+document.addEventListener('keydown', (e)=>{
+  if(e.key.toLowerCase() === 'n') resetBoard(true);
+  if(e.key.toLowerCase() === 'r') { scores={X:0,O:0,D:0}; scoreXEl.textContent=0;scoreOEl.textContent=0;drawsEl.textContent=0; resetBoard(true); }
+});
+
+// initialize
+createBoard();
+resetBoard(true);
+render();
+
+// If playing vs computer and computer should play first (depending on start)
+if(modeEl.value === 'pvai' && current !== humanTurn()) aiMove();
+
+</script>
+</body>
+</html>
